@@ -42,7 +42,7 @@ public class ServicesFacade implements IServicesFacade {
         this.iComptecourantRepository.save(comptecourantCrediter);
     }
 
-    public void effectuerVirement(int montant, long idDestinataire, long idExpediteur){
+    public void effectuerVirement(int montant, long idDestinataire, long idExpediteur) throws Exception {
         Comptecourant expediteur = debiter(montant, idExpediteur);
         Comptecourant destinataire = crediter(montant, idDestinataire);
 
@@ -56,17 +56,27 @@ public class ServicesFacade implements IServicesFacade {
         iOperationRepository.save(operation);
     }
 
-    private Comptecourant debiter(int montant, long idCompte) {
+    private Comptecourant debiter(int montant, long idCompte) throws Exception {
 
         Comptecourant compteCourant = iComptecourantRepository.findById(idCompte).orElse(null);
+        if(compteCourant == null){
+            throw new Exception("404");
+        } else if (compteCourant.getSolde() + compteCourant.getDecouvert() > montant){
+            throw new Exception("403");
+        }
         compteCourant.setSolde(compteCourant.getSolde()-montant);
         iComptecourantRepository.save(compteCourant);
         return compteCourant;
     }
 
-    private Comptecourant crediter(int montant, long idCompte) {
+    private Comptecourant crediter(int montant, long idCompte) throws Exception {
 
         Comptecourant compteCourant = iComptecourantRepository.findById(idCompte).orElse(null);
+        if(compteCourant == null){
+            throw new Exception("404");
+        } else if (compteCourant.getSolde() + compteCourant.getDecouvert() > montant){
+            throw new Exception("403");
+        }
         compteCourant.setSolde(compteCourant.getSolde()+montant);
         iComptecourantRepository.save(compteCourant);
         return compteCourant;

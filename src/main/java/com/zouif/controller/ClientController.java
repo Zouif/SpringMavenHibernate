@@ -52,7 +52,7 @@ public class ClientController {
     }
 
     @PostMapping("/virement")
-    public void virement(int montant, long idExpediteur, long idDestinataire) {
+    public void virement(int montant, long idExpediteur, long idDestinataire) throws Exception {
         this.iServicesFacade.effectuerVirement(montant, idExpediteur, idDestinataire);
     }
 
